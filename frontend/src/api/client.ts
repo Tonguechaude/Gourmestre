@@ -8,16 +8,22 @@ const apiClient = axios.create({
 });
 
 export interface User {
-  id: string;
-  name: string;
+  id: number;
   email: string;
+  username: string;
+  password_hash: string;
   created_at: string;
+  updated_at: string;
+  is_active: boolean;
+  failed_login_attempts: number;
+  last_login: string | null;
+  account_locked_until: string | null;
 }
 
 export const userApi = {
   getUsers: (): Promise<User[]> =>
     apiClient.get("/users").then((res) => res.data),
 
-  createUser: (user: Omit<User, "id" | "created_at">): Promise<User> =>
+  createUser: (user: { username: string; email: string }): Promise<User> =>
     apiClient.post("/users", user).then((res) => res.data),
 };

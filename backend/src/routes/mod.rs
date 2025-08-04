@@ -19,6 +19,6 @@ async fn get_users(pool: web::Data<PgPool>) -> Result<HttpResponse> {
     Ok(HttpResponse::Ok().json(users))
 }
 
-async fn create_user(pool: web::Data<PgPool>, user: web::Json<User>) -> Result<HttpResponse> {
+async fn create_user(_pool: web::Data<PgPool>, user: web::Json<User>) -> Result<HttpResponse> {
     Ok(HttpResponse::Created().json(&*user))
 }
