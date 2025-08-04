@@ -1,16 +1,3 @@
-import { useState, useEffect } from "react";
-import { userApi, type User } from "../api/client";
-
-export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    userApi
-      .getUsers()
-      .then(setUsers)
-      .finally(() => setLoading(false));
-  }, []);
-
-  return { users, loading };
-};
+// This file is deprecated. Use the AuthContext instead.
+// The useAuth hook is now provided by /src/contexts/AuthContext.tsx
+export {};

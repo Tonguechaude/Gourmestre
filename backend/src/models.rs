@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct User {
@@ -151,10 +152,15 @@ impl std::str::FromStr for Priority {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ApiResponse<T> {
+    /// Whether the request was successful
+    #[schema(example = true)]
     pub success: bool,
+    /// Response data (if successful)
     pub data: Option<T>,
+    /// Error or success message
+    #[schema(example = "Operation completed successfully")]
     pub message: Option<String>,
 }
 
@@ -176,18 +182,31 @@ impl<T> ApiResponse<T> {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct PaginatedResponse<T> {
+    /// List of items for current page
     pub items: Vec<T>,
+    /// Total number of items across all pages
+    #[schema(example = 100)]
     pub total: i64,
+    /// Current page number (1-based)
+    #[schema(example = 1)]
     pub page: i32,
+    /// Number of items per page
+    #[schema(example = 20)]
     pub page_size: i32,
+    /// Total number of pages
+    #[schema(example = 5)]
     pub total_pages: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct PaginationParams {
+    /// Page number (1-based, defaults to 1)
+    #[schema(example = 1, minimum = 1)]
     pub page: Option<i32>,
+    /// Number of items per page (defaults to 20, max 100)
+    #[schema(example = 20, minimum = 1, maximum = 100)]
     pub page_size: Option<i32>,
 }
 

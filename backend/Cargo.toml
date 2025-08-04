@@ -1,22 +1,80 @@
 [package]
-name = "backend"
+name = "gourmestre"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-actix-web = "4"
+# Web framework
+actix-web = "4.9.0"
+actix-session = { version = "0.10.1", features = ["cookie-session"] }
+actix-identity = "0.7.1"
 actix-cors = "0.7"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-sqlx = { version = "0.7", features = [
+tokio = { version = "1.45.1", features = ["full"] }
+
+# Database
+sqlx = { version = "0.8.2", features = [
     "runtime-tokio-rustls",
     "postgres",
-    "uuid",
     "chrono",
+    "uuid",
+    "bigdecimal",
+    "ipnetwork",
+    "migrate",
 ] }
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-uuid = { version = "1.0", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
+
+# Authentication & Security
+bcrypt = "0.17"
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
+
+# Utilities
+dotenvy = "0.15.7"
+
+# HTTP client for autocomplete API
+reqwest = { version = "0.12", features = ["json"] }
+urlencoding = "2.1"
+
+# Logging
+env_logger = "0.11"
+log = "0.4"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tracing-actix-web = "0.7"
+
+# Error handling
+thiserror = "2.0"
 anyhow = "1.0"
-env_logger = "0.10"
-dotenvy = "0.15"
+
+# Async traits
+async-trait = "0.1"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# BigDecimal for PostgreSQL NUMERIC
+bigdecimal = "0.4"
+
+# API Documentation
+utoipa = { version = "4.0", features = ["actix_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "4.0", features = ["actix-web"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+rstest = "0.23"
+
+[features]
+default = ["dev"]
+dev = []
+prod = []
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+opt-level = 3
+debug = false
+overflow-checks = false
+strip = true
