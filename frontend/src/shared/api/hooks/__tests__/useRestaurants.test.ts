@@ -32,7 +32,15 @@ describe('useRestaurants', () => {
 
   it('should fetch restaurants successfully', async () => {
     const mockData = [
-      { id: 1, name: 'Test Restaurant', city: 'Paris', rating: 5, is_favorite: true }
+      { 
+        id: 1, 
+        name: 'Test Restaurant', 
+        city: 'Paris', 
+        rating: 5, 
+        is_favorite: true,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
+      }
     ];
     
     vi.mocked(restaurantApi.getRestaurants).mockResolvedValue(mockData);

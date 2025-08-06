@@ -22,11 +22,6 @@ const createTestQueryClient = () =>
         retry: false,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
-    },
   });
 
 export function renderWithProviders(
