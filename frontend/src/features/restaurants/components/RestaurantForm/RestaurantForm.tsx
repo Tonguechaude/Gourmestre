@@ -1,5 +1,6 @@
 import React from 'react';
-import { useRestaurantForm } from '../../hooks';
+import { useRestaurantFormRHF } from '../../hooks/useRestaurantFormRHF';
+import { FormError } from '../../../../shared/components';
 import AutocompleteInput from '../../../../components/AutocompleteInput';
 
 interface RestaurantFormProps {
@@ -14,13 +15,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   className = "" 
 }) => {
   const {
-    formData,
-    updateField,
-    handleInputChange,
-    handleStarClick,
+    register,
     handleSubmit,
-    isLoading
-  } = useRestaurantForm({ onSuccess, onError });
+    errors,
+    isValid,
+    isDirty,
+    isLoading,
+    handleStarClick,
+    watchedRating,
+    watchedName,
+    setValue,
+  } = useRestaurantFormRHF({ onSuccess, onError });
 
   const renderStars = (rating: number, interactive = false) => {
     return (
@@ -54,41 +59,39 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="form-group">
             <AutocompleteInput
-              value={formData.name}
-              onChange={(value) => updateField('name', value)}
-              onCityChange={(city) => updateField('city', city)}
+              value={watchedName}
+              onChange={(value) => setValue('name', value, { shouldValidate: true, shouldDirty: true })}
+              onCityChange={(city) => setValue('city', city, { shouldValidate: true, shouldDirty: true })}
               placeholder="Nom du restaurant"
               label="Nom du restaurant"
               type="restaurants"
               required
             />
+            <FormError error={errors.name?.message} />
           </div>
           
           <div className="form-group">
             <input
+              {...register('city')}
               type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              className="form-input"
+              className={`form-input ${errors.city ? 'error' : ''}`}
               placeholder="Ville"
-              required
             />
             <label className="form-label">Ville</label>
+            <FormError error={errors.city?.message} />
           </div>
         </div>
         
         {/* Description */}
         <div className="form-group">
           <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className="form-input form-textarea"
+            {...register('description')}
+            className={`form-input form-textarea ${errors.description ? 'error' : ''}`}
             placeholder="Votre avis, vos impressions..."
             rows={4}
           />
           <label className="form-label">Description</label>
+          <FormError error={errors.description?.message} />
         </div>
         
         {/* Notation et Favoris */}
@@ -96,18 +99,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
           {/* Système d'étoiles */}
           <div className="form-group mb-0">
             <label className="text-caption mb-3 block">Votre note</label>
-            {renderStars(formData.rating, true)}
-            <input type="hidden" name="rating" value={formData.rating} />
+            {renderStars(watchedRating, true)}
+            <input type="hidden" {...register('rating')} />
+            <FormError error={errors.rating?.message} />
           </div>
           
           {/* Checkbox Favoris */}
           <div className="form-group mb-0">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
+                {...register('is_favorite')}
                 type="checkbox"
-                name="is_favorite"
-                checked={formData.is_favorite}
-                onChange={handleInputChange}
                 className="form-checkbox"
               />
               <span className="text-body">Ajouter aux favoris</span>
@@ -122,8 +124,8 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         <div className="pt-4">
           <button 
             type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading}
+            className={`btn btn-primary ${!isValid || !isDirty ? 'disabled' : ''}`}
+            disabled={isLoading || !isValid || !isDirty}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="12" r="10"/>

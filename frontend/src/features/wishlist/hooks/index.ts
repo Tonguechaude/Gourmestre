@@ -1,1 +1,1 @@
-export * from './useWishlistForm';
+export { useWishlistFormRHF } from './useWishlistFormRHF';

@@ -1,5 +1,7 @@
 import React from 'react';
-import { useWishlistForm } from '../../hooks';
+import { useWishlistFormRHF } from '../../hooks/useWishlistFormRHF';
+import { FormError } from '../../../../shared/components';
+import { priorityOptions } from '../../../../shared/validation';
 import AutocompleteInput from '../../../../components/AutocompleteInput';
 
 interface WishlistFormProps {
@@ -14,12 +16,15 @@ const WishlistForm: React.FC<WishlistFormProps> = ({
   className = "" 
 }) => {
   const {
-    formData,
-    updateField,
-    handleInputChange,
+    register,
     handleSubmit,
-    isLoading
-  } = useWishlistForm({ onSuccess, onError });
+    errors,
+    isValid,
+    isDirty,
+    isLoading,
+    watchedName,
+    setValue,
+  } = useWishlistFormRHF({ onSuccess, onError });
 
   return (
     <div className={`card ${className}`} style={{ padding: 'var(--space-2xl)' }}>
@@ -40,65 +45,64 @@ const WishlistForm: React.FC<WishlistFormProps> = ({
           {/* Nom du restaurant */}
           <div className="form-group">
             <AutocompleteInput
-              value={formData.name}
-              onChange={(value) => updateField('name', value)}
-              onCityChange={(city) => updateField('city', city)}
+              value={watchedName}
+              onChange={(value) => setValue('name', value, { shouldValidate: true, shouldDirty: true })}
+              onCityChange={(city) => setValue('city', city, { shouldValidate: true, shouldDirty: true })}
               placeholder="Ex: Le Comptoir du Relais"
               label="Nom du restaurant"
               type="wishlist"
               required
             />
+            <FormError error={errors.name?.message} />
           </div>
           
           {/* Ville */}
           <div className="form-group">
             <input
+              {...register('city')}
               type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              className="form-input"
+              className={`form-input ${errors.city ? 'error' : ''}`}
               placeholder="Ex: Paris"
-              required
             />
             <label className="form-label">Ville</label>
+            <FormError error={errors.city?.message} />
           </div>
         </div>
         
         {/* Priorité */}
         <div className="form-group">
           <select
-            name="priority"
-            value={formData.priority}
-            onChange={handleInputChange}
-            className="form-select"
+            {...register('priority')}
+            className={`form-select ${errors.priority ? 'error' : ''}`}
           >
-            <option value="low">Basse</option>
-            <option value="medium">Moyenne</option>
-            <option value="high">Haute</option>
+            {priorityOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
           <label className="form-label">Priorité</label>
+          <FormError error={errors.priority?.message} />
         </div>
         
         {/* Notes */}
         <div className="form-group">
           <textarea
-            name="notes"
-            value={formData.notes}
-            onChange={handleInputChange}
-            className="form-input form-textarea"
+            {...register('notes')}
+            className={`form-input form-textarea ${errors.notes ? 'error' : ''}`}
             rows={3}
             placeholder="Pourquoi voulez-vous essayer ce restaurant ?"
           />
           <label className="form-label">Notes (optionnel)</label>
+          <FormError error={errors.notes?.message} />
         </div>
         
         {/* Bouton d'envoi */}
         <div className="pt-4">
           <button 
             type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading}
+            className={`btn btn-primary ${!isValid || !isDirty ? 'disabled' : ''}`}
+            disabled={isLoading || !isValid || !isDirty}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7z"/>

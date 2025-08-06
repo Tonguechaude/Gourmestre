@@ -1,1 +1,1 @@
-export * from './useRestaurantForm';
+export { useRestaurantFormRHF } from './useRestaurantFormRHF';
