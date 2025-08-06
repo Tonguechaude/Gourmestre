@@ -30,6 +30,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 - Docker & Docker Compose
 - PostgreSQL 16
 
+
 ## 📋 Roadmap
 
 ### ✅ Fait
@@ -41,7 +42,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 
 ### 🚧 En cours
 - [ ] Implémentation des modèles Rust manquants
-- [ ] API REST complète (CRUD restaurants/wishlist)  
+- [ ] API REST complète (CRUD restaurants/wishlist)
 - [ ] Interface utilisateur React
 - [ ] Système d'authentification frontend
 
@@ -57,7 +58,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 ## 🛠️ Installation
 
 ### Prérequis
-- Rust 1.70+
+- Rust 1.80+
 - Node.js 18+
 - Docker & Docker Compose
 
@@ -80,6 +81,19 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
    # Créer le fichier .env à la racine du backend
    echo "DATABASE_URL=postgresql://u_gourmestre:tongue@localhost:5432/Gourmestre" > backend/.env
    ```
+   ```
+    # Base de données
+    DATABASE_URL=postgresql://u_gourmestre:tongue@127.0.0.1:5432/Gourmestre
+    DB_HOST=127.0.0.1
+    DB_PORT=5432
+    DB_NAME=Gourmestre
+    DB_USER=u_gourmestre
+    DB_PASSWORD=tongue
+
+    # Rust params
+    RUST_LOG=debug
+  ```
+
 
 4. **Lancer le backend**
    ```bash
@@ -106,7 +120,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 
 ### Schéma principal
 - `users` : Gestion des comptes utilisateurs
-- `restaurants` : Restaurants visités et notés  
+- `restaurants` : Restaurants visités et notés
 - `wishlist_items` : Restaurants à découvrir
 - `sessions` : Sessions utilisateurs sécurisées
 - `audit_log` : Journal d'audit des actions
@@ -118,7 +132,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 # Tests unitaires
 cd backend && cargo test --lib
 
-# Tests d'intégration  
+# Tests d'intégration
 cd backend && cargo test tests::integration
 
 # Tous les tests
