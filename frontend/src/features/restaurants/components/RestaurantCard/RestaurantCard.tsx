@@ -1,4 +1,5 @@
 import React, { memo, useMemo, useCallback } from 'react';
+import { useResponsive } from '../../../../shared';
 
 interface Restaurant {
   id: number;
@@ -26,6 +27,8 @@ const RestaurantCard: React.FC<RestaurantCardProps> = memo(({
   className = '',
   showActions = false,
 }) => {
+  const { isMobile } = useResponsive();
+
   // Memoize star rendering to avoid re-computation
   const stars = useMemo(() => (
     <div className="star-rating">
@@ -61,31 +64,38 @@ const RestaurantCard: React.FC<RestaurantCardProps> = memo(({
   }, [onDelete, restaurant.id, restaurant.name]);
 
   return (
-    <div className={`card ${className}`} style={{ padding: 'var(--space-lg)' }}>
-      <div className="flex items-start justify-between mb-3">
+    <div className={`card ${className}`} style={{ padding: isMobile ? 'var(--space-md)' : 'var(--space-lg)' }}>
+      <div className={`flex ${isMobile ? 'flex-col' : 'items-start justify-between'} ${isMobile ? 'gap-3' : 'mb-3'}`}>
         <div className="flex-1">
-          <h3 className="text-heading-3 mb-1">{restaurant.name}</h3>
-          <p className="text-body-sm">{restaurant.city}</p>
+          <h3 className={`${isMobile ? 'text-body' : 'text-heading-3'} mb-1 font-semibold`}>
+            {restaurant.name}
+          </h3>
+          <p className={`${isMobile ? 'text-body-sm' : 'text-body-sm'}`}>
+            {restaurant.city}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          {stars}
-          {restaurant.is_favorite && (
-            <svg 
-              width="18" 
-              height="18" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="1.5" 
-              style={{ color: 'rgb(var(--color-accent))' }}
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          )}
+        
+        <div className={`flex items-center ${isMobile ? 'justify-between' : 'gap-2'}`}>
+          <div className="flex items-center gap-2">
+            {stars}
+            {restaurant.is_favorite && (
+              <svg 
+                width={isMobile ? "16" : "18"}
+                height={isMobile ? "16" : "18"}
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                style={{ color: 'rgb(var(--color-accent))' }}
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            )}
+          </div>
           
           {/* Actions optionnelles */}
           {showActions && (
-            <div className="flex items-center gap-1 ml-2">
+            <div className={`flex items-center gap-1 ${!isMobile ? 'ml-2' : ''}`}>
               <button
                 onClick={handleEdit}
                 className="btn btn-ghost text-sm p-1"
@@ -113,12 +123,12 @@ const RestaurantCard: React.FC<RestaurantCardProps> = memo(({
       </div>
       
       {restaurant.description && (
-        <p className="text-body-sm" style={{ color: 'rgb(var(--color-secondary))' }}>
+        <p className={`text-body-sm ${isMobile ? 'mt-2' : 'mt-0'}`} style={{ color: 'rgb(var(--color-secondary))' }}>
           {restaurant.description}
         </p>
       )}
       
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+      <div className={`flex items-center justify-between ${isMobile ? 'mt-2 pt-2' : 'mt-3 pt-3'} border-t border-gray-100`}>
         <span className="text-caption" style={{ color: 'rgb(var(--color-muted))' }}>
           Ajouté le {formattedDate}
         </span>

@@ -1,4 +1,5 @@
 import React, { memo, useMemo, useCallback } from 'react';
+import { useResponsive } from '../../../../shared';
 
 interface WishlistItem {
   id: number;
@@ -41,6 +42,8 @@ const WishlistCard: React.FC<WishlistCardProps> = memo(({
   className = '',
   showActions = true,
 }) => {
+  const { isMobile } = useResponsive();
+
   // Memoize priority styling to avoid re-computation
   const priorityStyle = useMemo(() => {
     const color = PRIORITY_COLORS[item.priority] || '#6b7280';
@@ -78,7 +81,7 @@ const WishlistCard: React.FC<WishlistCardProps> = memo(({
   }, [onEdit, item]);
 
   return (
-    <div className={`card ${className}`} style={{ padding: 'var(--space-lg)' }}>
+    <div className={`card ${className}`} style={{ padding: isMobile ? 'var(--space-md)' : 'var(--space-lg)' }}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-heading-3 mb-1">{item.name}</h3>

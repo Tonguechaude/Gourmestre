@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRestaurantFormRHF } from '../../hooks/useRestaurantFormRHF';
 import { FormError } from '../../../../shared/components';
+import { useResponsive } from '../../../../shared';
 import AutocompleteInput from '../../../../components/AutocompleteInput';
 
 interface RestaurantFormProps {
@@ -14,6 +15,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   onError, 
   className = "" 
 }) => {
+  const { isMobile } = useResponsive();
   const {
     register,
     handleSubmit,
@@ -48,15 +50,17 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   };
 
   return (
-    <div className={`card ${className}`} style={{ padding: 'var(--space-2xl)' }}>
-      <header className="mb-8">
-        <h2 className="text-heading-2 mb-2">Ajouter un restaurant</h2>
+    <div className={`card ${className}`} style={{ padding: isMobile ? 'var(--space-lg)' : 'var(--space-2xl)' }}>
+      <header className={isMobile ? 'mb-4' : 'mb-8'}>
+        <h2 className={`${isMobile ? 'text-heading-3' : 'text-heading-2'} mb-2`}>
+          Ajouter un restaurant
+        </h2>
         <p className="text-body-sm">Enrichissez votre collection gastronomique</p>
       </header>
     
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className={isMobile ? 'space-y-4' : 'space-y-6'}>
         {/* Champs principaux */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 gap-6'}`}>
           <div className="form-group">
             <AutocompleteInput
               value={watchedName}

@@ -12,6 +12,7 @@ interface DashboardSidebarProps {
   onLogout: () => void;
   stats: Stats;
   wishlistCount: number;
+  isMobile?: boolean;
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -20,17 +21,20 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   onLogout,
   stats,
   wishlistCount,
+  isMobile = false,
 }) => {
   return (
-    <nav className="w-72 flex-shrink-0 bg-white border-r flex flex-col" style={{ borderColor: 'var(--border-subtle)' }}>
-      {/* Logo & Titre */}
-      <div className="p-8 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-        <h1 className="text-display">Gourmestre</h1>
-        <p className="text-body-sm mt-2">Votre carnet gastronomique</p>
-      </div>
+    <nav className={`${isMobile ? 'w-full' : 'w-72 flex-shrink-0'} bg-white ${!isMobile ? 'border-r' : ''} flex flex-col`} style={{ borderColor: 'var(--border-subtle)' }}>
+      {/* Logo & Titre - Only show on desktop */}
+      {!isMobile && (
+        <div className="p-8 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+          <h1 className="text-display">Gourmestre</h1>
+          <p className="text-body-sm mt-2">Votre carnet gastronomique</p>
+        </div>
+      )}
       
       {/* Menu Navigation */}
-      <div className="flex-1 p-6 space-y-8">
+      <div className={`flex-1 ${isMobile ? 'p-4' : 'p-6'} space-y-6`}>
         {/* Navigation principale */}
         <div>
           <h3 className="text-caption mb-4" style={{ color: 'rgb(var(--color-muted))', fontWeight: 'var(--font-weight-semibold)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -113,7 +117,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       </div>
       
       {/* Section Déconnexion */}
-      <div className="p-6 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className={`${isMobile ? 'p-4' : 'p-6'} border-t`} style={{ borderColor: 'var(--border-subtle)' }}>
         <button 
           onClick={onLogout}
           className="btn btn-ghost w-full justify-start"
