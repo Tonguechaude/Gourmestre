@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface FormErrorProps {
   error?: string;
   className?: string;
 }
 
-const FormError: React.FC<FormErrorProps> = ({ error, className = '' }) => {
+const FormError: React.FC<FormErrorProps> = memo(({ error, className = '' }) => {
   if (!error) return null;
 
   return (
@@ -25,6 +25,8 @@ const FormError: React.FC<FormErrorProps> = ({ error, className = '' }) => {
       {error}
     </div>
   );
-};
+});
+
+FormError.displayName = 'FormError';
 
 export default FormError;

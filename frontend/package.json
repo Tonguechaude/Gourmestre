@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "analyze": "vite-bundle-analyzer dist/stats.html",
+    "build:analyze": "tsc -b && vite build --config vite.config.analyze.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
@@ -45,6 +47,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
+    "vite-bundle-analyzer": "^1.2.0",
     "vitest": "^3.2.4"
   }
 }

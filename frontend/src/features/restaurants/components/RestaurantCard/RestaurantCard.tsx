@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 
 interface Restaurant {
   id: number;
@@ -19,41 +19,46 @@ interface RestaurantCardProps {
   showActions?: boolean;
 }
 
-const RestaurantCard: React.FC<RestaurantCardProps> = ({
+const RestaurantCard: React.FC<RestaurantCardProps> = memo(({
   restaurant,
   onEdit,
   onDelete,
   className = '',
   showActions = false,
 }) => {
-  const renderStars = (rating: number) => {
-    return (
-      <div className="star-rating">
-        {[1, 2, 3, 4, 5].map(star => (
-          <svg
-            key={star}
-            className={`star ${star <= rating ? 'active' : ''}`}
-            data-rating={star}
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            style={{ cursor: 'default' }}
-          >
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-        ))}
-      </div>
-    );
-  };
+  // Memoize star rendering to avoid re-computation
+  const stars = useMemo(() => (
+    <div className="star-rating">
+      {[1, 2, 3, 4, 5].map(star => (
+        <svg
+          key={star}
+          className={`star ${star <= restaurant.rating ? 'active' : ''}`}
+          data-rating={star}
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          style={{ cursor: 'default' }}
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      ))}
+    </div>
+  ), [restaurant.rating]);
 
-  const handleEdit = () => {
+  // Memoize formatted date to avoid re-computation
+  const formattedDate = useMemo(() => 
+    new Date(restaurant.created_at).toLocaleDateString('fr-FR'),
+    [restaurant.created_at]
+  );
+
+  const handleEdit = useCallback(() => {
     onEdit?.(restaurant);
-  };
+  }, [onEdit, restaurant]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer "${restaurant.name}" ?`)) {
       onDelete?.(restaurant.id);
     }
-  };
+  }, [onDelete, restaurant.id, restaurant.name]);
 
   return (
     <div className={`card ${className}`} style={{ padding: 'var(--space-lg)' }}>
@@ -63,7 +68,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
           <p className="text-body-sm">{restaurant.city}</p>
         </div>
         <div className="flex items-center gap-2">
-          {renderStars(restaurant.rating)}
+          {stars}
           {restaurant.is_favorite && (
             <svg 
               width="18" 
@@ -115,11 +120,13 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
         <span className="text-caption" style={{ color: 'rgb(var(--color-muted))' }}>
-          Ajouté le {new Date(restaurant.created_at).toLocaleDateString('fr-FR')}
+          Ajouté le {formattedDate}
         </span>
       </div>
     </div>
   );
-};
+});
+
+RestaurantCard.displayName = 'RestaurantCard';
 
 export default RestaurantCard;

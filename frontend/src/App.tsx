@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AppProviders } from './app/providers';
+import { LazyWrapper } from './shared/components';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './components/Landing';
-import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
+import { LazyLogin, LazyDashboard } from './components/LazyComponents';
 
 function App() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
@@ -20,7 +20,11 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route 
           path="/login" 
-          element={<Login showWelcomeMessage={showWelcomeMessage} />} 
+          element={
+            <LazyWrapper>
+              <LazyLogin showWelcomeMessage={showWelcomeMessage} />
+            </LazyWrapper>
+          } 
         />
         <Route 
           path="/register" 
@@ -30,7 +34,9 @@ function App() {
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <LazyWrapper>
+                <LazyDashboard />
+              </LazyWrapper>
             </ProtectedRoute>
           } 
         />

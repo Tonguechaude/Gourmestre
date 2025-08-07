@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 
 interface WishlistItem {
   id: number;
@@ -19,7 +19,21 @@ interface WishlistCardProps {
   showActions?: boolean;
 }
 
-const WishlistCard: React.FC<WishlistCardProps> = ({
+// Priority color mapping
+const PRIORITY_COLORS = {
+  high: '#ef4444',
+  medium: '#f59e0b', 
+  low: '#10b981',
+} as const;
+
+// Priority label mapping
+const PRIORITY_LABELS = {
+  high: 'Haute',
+  medium: 'Moyenne',
+  low: 'Basse',
+} as const;
+
+const WishlistCard: React.FC<WishlistCardProps> = memo(({
   item,
   onPromote,
   onDelete,
@@ -27,37 +41,41 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   className = '',
   showActions = true,
 }) => {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#6b7280';
-    }
-  };
+  // Memoize priority styling to avoid re-computation
+  const priorityStyle = useMemo(() => {
+    const color = PRIORITY_COLORS[item.priority] || '#6b7280';
+    return {
+      backgroundColor: `${color}20`,
+      color,
+      fontSize: '0.75rem'
+    };
+  }, [item.priority]);
 
-  const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'Haute';
-      case 'medium': return 'Moyenne';
-      case 'low': return 'Basse';
-      default: return priority;
-    }
-  };
+  // Memoize priority label
+  const priorityLabel = useMemo(() => 
+    PRIORITY_LABELS[item.priority] || item.priority,
+    [item.priority]
+  );
 
-  const handlePromote = () => {
+  // Memoize formatted date
+  const formattedDate = useMemo(() =>
+    new Date(item.created_at).toLocaleDateString('fr-FR'),
+    [item.created_at]
+  );
+
+  const handlePromote = useCallback(() => {
     onPromote?.(item.id);
-  };
+  }, [onPromote, item.id]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer "${item.name}" de votre wishlist ?`)) {
       onDelete?.(item.id);
     }
-  };
+  }, [onDelete, item.id, item.name]);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     onEdit?.(item);
-  };
+  }, [onEdit, item]);
 
   return (
     <div className={`card ${className}`} style={{ padding: 'var(--space-lg)' }}>
@@ -68,13 +86,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
           <div className="flex items-center gap-2 mt-2">
             <span 
               className="text-caption px-2 py-1 rounded-full"
-              style={{ 
-                backgroundColor: `${getPriorityColor(item.priority)}20`,
-                color: getPriorityColor(item.priority),
-                fontSize: '0.75rem'
-              }}
+              style={priorityStyle}
             >
-              {getPriorityLabel(item.priority)}
+              {priorityLabel}
             </span>
           </div>
         </div>
@@ -129,11 +143,13 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
         <span className="text-caption" style={{ color: 'rgb(var(--color-muted))' }}>
-          Ajouté le {new Date(item.created_at).toLocaleDateString('fr-FR')}
+          Ajouté le {formattedDate}
         </span>
       </div>
     </div>
   );
-};
+});
+
+WishlistCard.displayName = 'WishlistCard';
 
 export default WishlistCard;
