@@ -1,14 +1,14 @@
-import React from 'react';
-import { render, type RenderOptions } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+import React from "react";
+import { render, type RenderOptions } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
 
-// Mock AuthContext pour les tests
+// Mock AuthContext
 const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <div data-testid="mock-auth">{children}</div>;
 };
 
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   initialEntries?: string[];
 }
 
@@ -26,7 +26,7 @@ const createTestQueryClient = () =>
 
 export function renderWithProviders(
   ui: React.ReactElement,
-  { initialEntries = ['/'], ...renderOptions }: CustomRenderOptions = {}
+  { initialEntries = ["/"], ...renderOptions }: CustomRenderOptions = {},
 ) {
   const testQueryClient = createTestQueryClient();
 
@@ -34,9 +34,7 @@ export function renderWithProviders(
     return (
       <QueryClientProvider client={testQueryClient}>
         <BrowserRouter>
-          <MockAuthProvider>
-            {children}
-          </MockAuthProvider>
+          <MockAuthProvider>{children}</MockAuthProvider>
         </BrowserRouter>
       </QueryClientProvider>
     );
@@ -48,5 +46,5 @@ export function renderWithProviders(
   };
 }
 
-export * from '@testing-library/react';
+export * from "@testing-library/react";
 export { renderWithProviders as render };
