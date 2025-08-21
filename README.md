@@ -7,14 +7,16 @@
 
 Une application de gestion de restaurants type "Letterboxd pour restaurants" construite avec Rust, React et PostgreSQL.
 
-## 🍽️ Fonctionnalités
+## Fonctionnalités
 
 - **Gestion de restaurants** : Ajout, notation et organisation de vos restaurants favoris
 - **Wishlist** : Liste de restaurants à découvrir avec système de priorités
 - **Authentification sécurisée** : Système de comptes utilisateurs avec sessions
 - **Interface moderne** : Frontend React responsive et intuitive
+- **Architecture moderne** : Frontend refactorisé avec React Query, Zod validation et code splitting
+- **Performance optimisée** : Bundle optimisé avec lazy loading et React.memo
 
-## 🚀 Stack Technique
+## Stack Technique
 
 **Backend**
 - Rust (Actix-web, SQLx, Tokio)
@@ -23,39 +25,69 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 
 **Frontend**
 - React 19 + TypeScript
-- Vite pour le développement
-- Axios pour les appels API
+- React Query pour la gestion d'état serveur
+- React Hook Form + Zod pour la validation
+- Vite pour le développement et build
+- Architecture feature-based modulaire
 
 **Infrastructure**
 - Docker & Docker Compose
 - PostgreSQL 16
 
+## Architecture Frontend
 
-## 📋 Roadmap
+Le frontend utilise une architecture moderne feature-based :
 
-### ✅ Fait
+```
+frontend/src/
+├── features/              # Organisation par fonctionnalités
+│   ├── restaurants/       # Gestion des restaurants
+│   │   ├── components/    # Composants React
+│   │   └── hooks/         # Hooks personnalisés
+│   ├── wishlist/          # Gestion de la wishlist
+│   └── dashboard/         # Layout et navigation
+├── shared/                # Code partagé
+│   ├── components/        # Composants réutilisables
+│   ├── hooks/             # Hooks utilitaires
+│   └── validation/        # Schémas Zod
+└── app/                   # Configuration globale
+    └── providers/         # React Query, contextes
+```
+
+**Dépendances clés :**
+- `@tanstack/react-query` : Cache intelligent et gestion des appels API
+- `react-hook-form` : Formulaires performants avec validation
+- `zod` : Validation type-safe des données
+- `zustand` : État global léger (alternative à Redux)
+
+## Roadmap
+
+### Terminé
 - [x] Structure de projet Rust + React
 - [x] Configuration PostgreSQL avec Docker
 - [x] Modèles de données (users, restaurants, wishlist)
 - [x] Système de sessions sécurisé
 - [x] Audit logging et contraintes de sécurité
+- [x] Refactoring frontend complet (870 → 330 lignes Dashboard)
+- [x] Architecture feature-based modulaire
+- [x] Validation type-safe avec Zod
+- [x] Performance optimisée avec code splitting
+- [x] Interface responsive (mobile/tablet/desktop)
 
-### 🚧 En cours
+### En cours
 - [ ] Implémentation des modèles Rust manquants
 - [ ] API REST complète (CRUD restaurants/wishlist)
-- [ ] Interface utilisateur React
 - [ ] Système d'authentification frontend
 
-### 📅 À venir
+### À venir
 - [ ] Tests unitaires et d'intégration
 - [ ] CI/CD avec GitHub Actions
-- [ ] Système de notation (1-5 étoiles)
 - [ ] Recherche et filtres avancés
 - [ ] Import/export de données
 - [ ] Mode sombre
 - [ ] API mobile-ready
 
-## 🛠️ Installation
+## Installation
 
 ### Prérequis
 - Rust 1.80+
@@ -110,7 +142,56 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
    # Interface disponible sur http://localhost:5173
    ```
 
-## 🗄️ Base de données
+## Guide d'utilisation des dépendances
+
+### React Hook Form
+Simplification des formulaires avec validation automatique :
+```typescript
+// Utilisation basique
+const { register, handleSubmit, errors } = useForm();
+
+// Dans le JSX
+<input {...register('name')} />
+<button onClick={handleSubmit(onSubmit)}>Valider</button>
+```
+
+### Zod Validation
+Validation type-safe des données :
+```typescript
+// Définition du schéma
+const schema = z.object({
+  name: z.string().min(2, 'Nom trop court'),
+  rating: z.number().min(1).max(5)
+});
+
+// Validation automatique
+const result = schema.parse(formData);
+```
+
+### React Query
+Gestion intelligente des appels API avec cache :
+```typescript
+// Récupération des données
+const { data: restaurants, isLoading } = useQuery({
+  queryKey: ['restaurants'],
+  queryFn: restaurantApi.getAll
+});
+```
+
+### Zustand
+État global simple :
+```typescript
+// Création du store
+const useStore = create((set) => ({
+  user: null,
+  setUser: (user) => set({ user })
+}));
+
+// Utilisation
+const user = useStore(state => state.user);
+```
+
+## Base de données
 
 ### Connexion PostgreSQL
 - **Conteneur** : `docker exec -it <container_id> /bin/bash`
@@ -125,7 +206,7 @@ Une application de gestion de restaurants type "Letterboxd pour restaurants" con
 - `sessions` : Sessions utilisateurs sécurisées
 - `audit_log` : Journal d'audit des actions
 
-## 🧪 Tests et CI/CD
+## Tests et CI/CD
 
 ### Tests locaux
 ```bash
@@ -158,7 +239,7 @@ cd backend && cargo tarpaulin --out Html --output-dir coverage
 - `pretty_assertions` : Assertions avec diff colorés
 - `cargo-tarpaulin` : Coverage pour Rust
 
-## 🏗️ Architecture
+## Architecture Projet
 
 ```
 Gourmestre/
@@ -170,9 +251,9 @@ Gourmestre/
 │   └── Cargo.toml
 ├── frontend/          # Interface React
 │   ├── src/
-│   │   ├── api/       # Client API
-│   │   ├── hooks/     # React hooks
-│   │   └── components/
+│   │   ├── features/  # Architecture feature-based
+│   │   ├── shared/    # Code partagé
+│   │   └── app/       # Configuration globale
 │   └── package.json
 ├── docker/            # Configuration Docker
 │   ├── docker-compose.yml
@@ -180,7 +261,7 @@ Gourmestre/
 └── CHANGELOG.md       # Journal des modifications
 ```
 
-## 🔒 Sécurité
+## Sécurité
 
 - **Sessions limitées** : Maximum 5 sessions actives par utilisateur
 - **Audit logging** : Traçabilité de toutes les actions utilisateurs
@@ -188,11 +269,11 @@ Gourmestre/
 - **Contraintes fortes** : Validation des données côté base
 - **Hash sécurisé** : Mots de passe hachés avec contraintes de longueur
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-## 🤝 Contribution
+## Contribution
 
 Les contributions sont les bienvenues ! Consultez le [CHANGELOG.md](CHANGELOG.md) pour suivre l'évolution du projet.
 
