@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 
 interface LazyWrapperProps {
   children: React.ReactNode;
@@ -12,15 +12,11 @@ const defaultFallback = (
   </div>
 );
 
-const LazyWrapper: React.FC<LazyWrapperProps> = ({ 
-  children, 
-  fallback = defaultFallback 
+const LazyWrapper: React.FC<LazyWrapperProps> = ({
+  children,
+  fallback = defaultFallback,
 }) => {
-  return (
-    <Suspense fallback={fallback}>
-      {children}
-    </Suspense>
-  );
+  return <Suspense fallback={fallback}>{children}</Suspense>;
 };
 
 export default LazyWrapper;

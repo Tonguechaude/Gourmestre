@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-type Breakpoint = 'mobile' | 'tablet' | 'desktop';
+type Breakpoint = "mobile" | "tablet" | "desktop";
 
 interface ResponsiveState {
   breakpoint: Breakpoint;
@@ -12,31 +12,31 @@ interface ResponsiveState {
 
 export const useResponsive = (): ResponsiveState => {
   const [state, setState] = useState<ResponsiveState>({
-    breakpoint: 'desktop',
+    breakpoint: "desktop",
     isMobile: false,
     isTablet: false,
     isDesktop: true,
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    width: typeof window !== "undefined" ? window.innerWidth : 1200,
   });
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       let breakpoint: Breakpoint;
-      
+
       if (width < 768) {
-        breakpoint = 'mobile';
+        breakpoint = "mobile";
       } else if (width < 1024) {
-        breakpoint = 'tablet';
+        breakpoint = "tablet";
       } else {
-        breakpoint = 'desktop';
+        breakpoint = "desktop";
       }
 
       setState({
         breakpoint,
-        isMobile: breakpoint === 'mobile',
-        isTablet: breakpoint === 'tablet',
-        isDesktop: breakpoint === 'desktop',
+        isMobile: breakpoint === "mobile",
+        isTablet: breakpoint === "tablet",
+        isDesktop: breakpoint === "desktop",
         width,
       });
     };
@@ -45,10 +45,10 @@ export const useResponsive = (): ResponsiveState => {
     handleResize();
 
     // Add event listener
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return state;
