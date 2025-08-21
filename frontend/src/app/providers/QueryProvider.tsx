@@ -1,13 +1,13 @@
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       retry: (failureCount, error: any) => {
-        // Retry 3 times pour les erreurs serveur, pas pour les 4xx
+        // Retry 3 times for server error, not for 4xx
         if (error?.response?.status >= 400 && error?.response?.status < 500) {
           return false;
         }
