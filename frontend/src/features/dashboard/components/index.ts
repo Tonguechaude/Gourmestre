@@ -1,1 +1,5 @@
-export { default as DashboardLayout, DashboardSidebar, DashboardActivity } from './DashboardLayout';
+export {
+  default as DashboardLayout,
+  DashboardSidebar,
+  DashboardActivity,
+} from "./DashboardLayout";

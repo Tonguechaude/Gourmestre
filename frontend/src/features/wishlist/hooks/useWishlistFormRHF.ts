@@ -1,7 +1,10 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateWishlistItem } from '../../../shared/api/hooks';
-import { wishlistSchema, type WishlistFormData } from '../../../shared/validation';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCreateWishlistItem } from "../../../shared/api/hooks";
+import {
+  wishlistSchema,
+  type WishlistFormData,
+} from "../../../shared/validation";
 
 interface UseWishlistFormOptions {
   onSuccess?: () => void;
@@ -9,10 +12,10 @@ interface UseWishlistFormOptions {
 }
 
 const defaultValues: WishlistFormData = {
-  name: '',
-  city: '',
-  notes: '',
-  priority: 'medium',
+  name: "",
+  city: "",
+  notes: "",
+  priority: "medium",
 };
 
 export const useWishlistFormRHF = (options: UseWishlistFormOptions = {}) => {
@@ -22,7 +25,7 @@ export const useWishlistFormRHF = (options: UseWishlistFormOptions = {}) => {
   const form = useForm({
     resolver: zodResolver(wishlistSchema),
     defaultValues,
-    mode: 'onChange' as const,
+    mode: "onChange" as const,
   });
 
   const {
@@ -35,20 +38,20 @@ export const useWishlistFormRHF = (options: UseWishlistFormOptions = {}) => {
   } = form;
 
   // Watch fields for controlled components
-  const watchedName = watch('name');
+  const watchedName = watch("name");
 
   const onSubmit = async (data: any) => {
     try {
       const apiData = {
         ...data,
-        notes: data.notes || '',
+        notes: data.notes || "",
       };
-      
+
       await createWishlistItem.mutateAsync(apiData);
       reset();
       onSuccess?.();
     } catch (error) {
-      console.error('Error creating wishlist item:', error);
+      console.error("Error creating wishlist item:", error);
       onError?.(error as Error);
     }
   };
@@ -58,17 +61,17 @@ export const useWishlistFormRHF = (options: UseWishlistFormOptions = {}) => {
     register,
     handleSubmit: handleSubmit(onSubmit),
     errors,
-    
+
     // Form state
     isValid,
     isDirty,
     isLoading: createWishlistItem.isPending,
-    
+
     // Custom methods
     watchedName,
     reset: () => reset(),
     setValue,
-    
+
     // API state
     error: createWishlistItem.error,
     isSuccess: createWishlistItem.isSuccess,
