@@ -1,0 +1,63 @@
+# Multi-stage build for Rust backend
+FROM rust:1.89-slim-bullseye AS builder
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Copy dependency files
+COPY ../backend/Cargo.toml ../backend/Cargo.lock ./
+
+# Create a dummy main.rs to build dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+
+# Build dependencies (cached layer)
+RUN cargo build --release --features prod
+RUN rm src/main.rs
+
+# Copy source code and migrations
+COPY ../backend/src ./src
+COPY ../backend/migrations ./migrations
+
+# Build the application
+RUN cargo build --release --features prod
+
+# Production stage
+FROM debian:bullseye-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user
+RUN useradd -r -u 1001 -m gourmestre
+
+# Copy the binary from builder stage
+COPY --from=builder /app/target/release/gourmestre /usr/local/bin/gourmestre
+
+# Set ownership and permissions
+RUN chown gourmestre:gourmestre /usr/local/bin/gourmestre
+RUN chmod +x /usr/local/bin/gourmestre
+
+# Switch to non-root user
+USER gourmestre
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Expose port
+EXPOSE 8080
+
+# Run the application
+CMD ["gourmestre"]
